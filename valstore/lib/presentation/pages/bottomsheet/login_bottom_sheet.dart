@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'page/login_rso_page.dart';
 
-void showRiotLoginBottomSheet(BuildContext context, MainViewModel viewModel) {
+void showRiotLoginBottomSheet(BuildContext context, WebViewController controller, MainViewModel viewModel) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -11,7 +12,7 @@ void showRiotLoginBottomSheet(BuildContext context, MainViewModel viewModel) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (context) => const RiotLoginPage(),
+    builder: (context) => RiotLoginPage(webViewController: controller,),
   ).then((data) async {
     if(data != null) {
       await viewModel.getEntitleToken(data['accessToken'], data['idToken'], (token) async {

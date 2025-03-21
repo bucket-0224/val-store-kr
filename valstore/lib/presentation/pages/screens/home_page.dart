@@ -36,11 +36,13 @@ class _HomePageState extends BaseWidget<MainViewModel, HomePage> {
 
   @override
   void onPresented() async {
+    if(!mounted) return;
     viewModel.startRemainingToRotation();
   }
 
   @override
   Widget onBuildWidget(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

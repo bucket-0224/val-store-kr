@@ -7,9 +7,10 @@ import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 import '../../util.dart';
 
 class AccountPage extends StatefulWidget {
-  const AccountPage({super.key, required this.title});
+  const AccountPage({super.key, required this.title, required this.eventSignOut});
 
   final String title;
+  final Future<void> Function() eventSignOut;
 
   @override
   State<StatefulWidget> createState() => _AccountPageState();
@@ -110,6 +111,10 @@ class _AccountPageState extends BaseWidget<MainViewModel, AccountPage> {
               const Divider(),
               const Padding(padding: EdgeInsets.only(bottom: 8)),
               SettingItem(settingName: "Set Locale", tailName: viewModel.getLocale(), onClickSetting: () => showRegionPicker()),
+              SettingItem(settingName: "Sign out", tailName: null, onClickSetting: () async {
+                viewModel.signOut();
+                await widget.eventSignOut();
+              }),
             ],
           ),
         ),

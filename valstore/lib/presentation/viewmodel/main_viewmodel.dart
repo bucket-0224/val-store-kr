@@ -52,11 +52,18 @@ class MainViewModel extends ChangeNotifier {
 
   late String accessToken;
   late String idToken;
+  late Timer timer;
 
   MainViewModel(this.entitlementUseCase, this.storefrontUseCase, this.skinUseCase, this.walletUseCase, this.matchUseCase, this.sharedPreferences, this.loadOutUseCase, this.playerInfoUseCase);
 
+
+  void stopRemainingTime() {
+    timer.cancel();
+  }
+
   void startRemainingToRotation() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+
       final remainingTime = timeUntilNextRotationDays();
 
       remainingTimeText = "상점 초기화까지 남은 시간: ${remainingTime.inHours}시간 ${remainingTime.inMinutes.remainder(60)}분 ${remainingTime.inSeconds.remainder(60)}초";
@@ -71,6 +78,19 @@ class MainViewModel extends ChangeNotifier {
     } else {
       onMessage("로그인을 진행해주세요.");
     }
+  }
+
+  void signOut() {
+    walletBalances.clear();
+    hasSigned = false;
+    mapList.clear();
+    skinList.clear();
+    matchesInfoList.clear();
+
+    accessToken = "";
+    idToken = "";
+
+    notifyListeners();
   }
 
   String getLocale() {

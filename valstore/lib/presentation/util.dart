@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+String rsoRiotLoginUrl = "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=69&scope=account%20openid";
 String defaultPlayerCardPlaceHolderUrl = "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png";
 
 String? extractPlayerUUID(String idToken) {

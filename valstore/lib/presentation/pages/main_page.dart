@@ -5,7 +5,9 @@ import 'package:valstore/presentation/pages/screens/account_page.dart';
 import 'package:valstore/presentation/pages/screens/home_page.dart';
 import 'package:valstore/presentation/pages/bottomsheet/page/login_rso_page.dart';
 import 'package:valstore/presentation/pages/screens/match_history_page.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
+import '../util.dart';
 import '../viewmodel/main_viewmodel.dart';
 import 'bottomsheet/login_bottom_sheet.dart';
 
@@ -18,14 +20,63 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
 
-  List<Widget> navWidgets = [
-    const HomePage(title: "Daily Market",),
-    const MatchHistoryPage(title: "Match History"),
-    const AccountPage(title: "My Account")
-  ];
+  late WebViewController webViewController;
+  List<Widget> navWidgets = [];
+
+
+  Future<void> clearCache() async {
+    await webViewController.clearCache();
+    await webViewController.clearLocalStorage();
+
+    webViewController.loadRequest(Uri.parse(rsoRiotLoginUrl));
+  }
+
+  void _handleRedirect(String url) {
+    Uri uri = Uri.parse(url);
+
+    // 예제: URL에서 access_token과 id_token을 추출
+    String? fragment = uri.fragment; // URL Fragment 부분 가져오기
+    if (fragment.isNotEmpty) {
+      Map<String, String> params = Uri.splitQueryString(fragment);
+      String? accessToken = params["access_token"];
+      String? idToken = params["id_token"];
+
+      if (accessToken != null && idToken != null) {
+        extractPlayerUUID(idToken);
+        Navigator.of(context).pop({
+          "accessToken" : accessToken,
+          "idToken" : idToken
+        });
+      }
+    }
+  }
 
   @override
   void onPresented() async {
+    navWidgets = [
+      const HomePage(title: "Daily Market",),
+      const MatchHistoryPage(title: "Match History"),
+      AccountPage(title: "My Account", eventSignOut: clearCache)
+    ];
+
+    webViewController = WebViewController()
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            // 리다이렉트 URL 감지
+            if (request.url.startsWith('https://playvalorant.com/opt_in')) {
+              _handleRedirect(request.url);
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(rsoRiotLoginUrl))
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
+
+    if(!mounted) return;
+
     if(viewModel.sharedPreferences.getString("accessToken") != null
         && viewModel.sharedPreferences.get("idToken") != null) {
       await viewModel.getEntitleToken(
@@ -98,7 +149,7 @@ class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
                 )
             );
           })
-        } : showRiotLoginBottomSheet(context, viewModel),
+        } : showRiotLoginBottomSheet(context, webViewController, viewModel),
         tooltip: viewModel.hasSigned ? 'Refresh Shop' : 'RSO SignIn',
         child: viewModel.hasSigned ? const Icon(Icons.refresh) : const Icon(Icons.login),
       ),
