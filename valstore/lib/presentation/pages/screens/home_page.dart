@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,12 +8,14 @@ import 'package:provider/provider.dart';
 import 'package:valstore/data/entitlement/model/entitlement_response.dart';
 import 'package:valstore/data/paid/model/wallet_response.dart';
 import 'package:valstore/data/skin/model/skin_response.dart';
+import 'package:valstore/data/skin/model/weapon_skin_response.dart';
 import 'package:valstore/data/storefront/remote/storefront_remote.dart';
 import 'package:valstore/domain/skin_usecase.dart';
 import 'package:valstore/domain/storefront_usecase.dart';
 import 'package:valstore/domain/wallet_usecase.dart';
 import 'package:valstore/presentation/base/base_widget.dart';
 import 'package:valstore/presentation/components/skin_card_components.dart';
+import 'package:valstore/presentation/pages/bottomsheet/weapon_detail_bottom_sheet.dart';
 import 'package:valstore/presentation/util.dart';
 import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 
@@ -20,8 +23,8 @@ import '../../../domain/entitlement_usecase.dart';
 import '../bottomsheet/login_bottom_sheet.dart';
 import '../bottomsheet/page/login_rso_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+class HomePage extends BaseStatelessWidget<MainViewModel> {
+  HomePage({
     super.key,
     required this.title
   });
@@ -29,24 +32,21 @@ class HomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends BaseWidget<MainViewModel, HomePage> {
-
-  @override
-  void onPresented() async {
-    if(!mounted) return;
+  void onPresented(BuildContext context) async {
     viewModel.startRemainingToRotation();
+
+    await viewModel.getWeaponSkinList((message) { });
   }
 
   @override
   Widget onBuildWidget(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .inversePrimary,
+        title: Text(title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -70,25 +70,34 @@ class _HomePageState extends BaseWidget<MainViewModel, HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Image.asset("assets/ic_valorant_point.png", width: 16, height: 16,),
+                Image.asset(
+                  "assets/ic_valorant_point.png", width: 16, height: 16,),
                 const Padding(padding: EdgeInsets.only(left: 4)),
                 Text(
-                  "${viewModel.walletBalances.isEmpty ? "0" : viewModel.walletBalances[0]}",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  "${viewModel.walletBalances.isEmpty ? "0" : viewModel
+                      .walletBalances[0]}",
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 8)),
-                Image.asset("assets/ic_radianite_point.png", width: 16, height: 16,),
+                Image.asset(
+                  "assets/ic_radianite_point.png", width: 16, height: 16,),
                 const Padding(padding: EdgeInsets.only(left: 4)),
                 Text(
-                  "${viewModel.walletBalances.isEmpty ? "0" : viewModel.walletBalances[2]}",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  "${viewModel.walletBalances.isEmpty ? "0" : viewModel
+                      .walletBalances[2]}",
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 8)),
-                Image.asset("assets/ic_kingdom_point.png", width: 16, height: 16,),
+                Image.asset(
+                  "assets/ic_kingdom_point.png", width: 16, height: 16,),
                 const Padding(padding: EdgeInsets.only(left: 4)),
                 Text(
-                  "${viewModel.walletBalances.isEmpty ? "0" : viewModel.walletBalances[1]}",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  "${viewModel.walletBalances.isEmpty ? "0" : viewModel
+                      .walletBalances[1]}",
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -97,7 +106,8 @@ class _HomePageState extends BaseWidget<MainViewModel, HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(viewModel.remainingTimeText, style: const TextStyle(fontWeight: FontWeight.bold),),
+                Text(viewModel.remainingTimeText,
+                  style: const TextStyle(fontWeight: FontWeight.bold),),
               ],
             ),
             const Padding(padding: EdgeInsets.only(bottom: 8)),
@@ -105,13 +115,31 @@ class _HomePageState extends BaseWidget<MainViewModel, HomePage> {
                 child: ListView.builder(
                   itemCount: viewModel.skinList.length,
                   itemBuilder: (context, index) {
-                    return SkinCard(item: viewModel.skinList[index]);
+                    return SkinCard(item: viewModel.skinList[index],
+                      onClickItem: (String uuid) async {
+                        List<WeaponSkinDetail> findWeaponSkins = viewModel
+                            .weaponsList.where((element) {
+                          final mapped = element.levels.map((item) =>
+                          item.uuid);
+
+                          return mapped.contains(uuid);
+                        }).toList();
+
+                        if (findWeaponSkins.isNotEmpty) {
+                          showWeaponDetailBottomSheet(context,
+                              findWeaponSkins.first,
+                              findWeaponSkins.first.chromas,
+                              findWeaponSkins.first.levels,
+                              viewModel
+                          );
+                        }
+                      },);
                   },
                 )
             ),
           ],
         ),
-      ),// This trailing comma makes auto-formatting nicer for build methods.
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

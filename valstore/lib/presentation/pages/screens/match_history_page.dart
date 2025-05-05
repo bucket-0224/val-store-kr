@@ -6,25 +6,20 @@ import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 
 import '../bottomsheet/login_bottom_sheet.dart';
 
-class MatchHistoryPage extends StatefulWidget {
-  const MatchHistoryPage({super.key, required this.title});
+class MatchHistoryPage extends BaseStatelessWidget<MainViewModel> {
+  MatchHistoryPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<StatefulWidget> createState() => _MatchHistoryPageState();
-}
-
-class _MatchHistoryPageState extends BaseWidget<MainViewModel, MatchHistoryPage> {
-  @override
-  void onPresented() async { }
+  void onPresented(BuildContext context) async { }
 
   @override
   Widget onBuildWidget(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
+          title: Text(title),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,

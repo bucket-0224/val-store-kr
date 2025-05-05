@@ -20,69 +20,40 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
 
-  final entitlementUseCase = getIt<EntitlementUseCase>();
-  final storefrontUseCase = getIt<StorefrontUseCase>();
-  final skinUseCase = getIt<SkinUseCase>();
-  final walletUseCase = getIt<WalletUseCase>();
-  final matchUseCase = getIt<MatchUseCase>();
-  final loadOutUseCase = getIt<LoadOutUseCase>();
-  final playerInfoUseCase = getIt<PlayerInfoUseCase>();
   final sharedPreferences = await SharedPreferences.getInstance();
+  getIt.registerSingleton<SharedPreferences>(sharedPreferences);
 
-  runApp(ValRankedApplication(
-    entitlementUseCase: entitlementUseCase,
-    storefrontUseCase: storefrontUseCase,
-    skinUseCase: skinUseCase,
-    walletUseCase: walletUseCase,
-    matchUseCase: matchUseCase,
-    sharedPreferences: sharedPreferences,
-    loadOutUseCase: loadOutUseCase,
-    playerInfoUseCase: playerInfoUseCase,
-  ));
+  runApp(const ValRankedApplication());
 }
 
 class ValRankedApplication extends StatelessWidget {
-  final EntitlementUseCase entitlementUseCase;
-  final StorefrontUseCase storefrontUseCase;
-  final SkinUseCase skinUseCase;
-  final WalletUseCase walletUseCase;
-  final MatchUseCase matchUseCase;
-  final LoadOutUseCase loadOutUseCase;
-  final SharedPreferences sharedPreferences;
-  final PlayerInfoUseCase playerInfoUseCase;
   
-  const ValRankedApplication({
-    super.key,
-    required this.entitlementUseCase,
-    required this.storefrontUseCase,
-    required this.skinUseCase,
-    required this.walletUseCase,
-    required this.matchUseCase,
-    required this.sharedPreferences,
-    required this.loadOutUseCase,
-    required this.playerInfoUseCase
-  });
+  const ValRankedApplication({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark, // 다크 테마 활성화
-      theme: ThemeData.light(), // 기본 라이트 테마
-      darkTheme: ThemeData.dark(), // 다크 테마 추가
-      home: ChangeNotifierProvider<MainViewModel>(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
           create: (_) => MainViewModel(
-            entitlementUseCase,
-            storefrontUseCase,
-            skinUseCase,
-            walletUseCase,
-            matchUseCase,
-            sharedPreferences,
-            loadOutUseCase,
-            playerInfoUseCase
+            getIt<EntitlementUseCase>(),
+            getIt<StorefrontUseCase>(),
+            getIt<SkinUseCase>(),
+            getIt<WalletUseCase>(),
+            getIt<MatchUseCase>(),
+            getIt<SharedPreferences>(),
+            getIt<LoadOutUseCase>(),
+            getIt<PlayerInfoUseCase>(),
           ),
-          child: const MainPage(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.dark,
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        home: MainPage(),
       ),
     );
   }

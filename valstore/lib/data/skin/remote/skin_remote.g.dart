@@ -162,6 +162,41 @@ class _SkinRemote implements SkinRemote {
   }
 
   @override
+  Future<WeaponSkinResponse> getWeaponSkinsList() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<WeaponSkinResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json',
+    )
+        .compose(
+          _dio.options,
+          '/v1/weapons/skins',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late WeaponSkinResponse _value;
+    try {
+      _value = WeaponSkinResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<PlayerCardResponse> getPlayerCard(String playerCardUUID) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

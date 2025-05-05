@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,9 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:valstore/data/info/model/player_info_response.dart';
 import 'package:valstore/data/match/model/match_history_detail_response.dart';
 import 'package:valstore/data/skin/model/agent_response.dart';
+import 'package:valstore/data/skin/model/weapon_skin_response.dart';
 import 'package:valstore/domain/load_out_usecase.dart';
 import 'package:valstore/domain/match_usecase.dart';
 import 'package:valstore/domain/player_info_usecase.dart';
+import 'package:valstore/presentation/base/base_viewmodel.dart';
 
 import '../../data/entitlement/model/entitlement_response.dart';
 import '../../data/skin/model/map_response.dart';
@@ -21,7 +24,7 @@ import '../../domain/storefront_usecase.dart';
 import '../../domain/wallet_usecase.dart';
 import '../util.dart';
 
-class MainViewModel extends ChangeNotifier {
+class MainViewModel extends BaseViewModel {
   final EntitlementUseCase entitlementUseCase;
   final StorefrontUseCase storefrontUseCase;
   final SkinUseCase skinUseCase;
@@ -34,6 +37,7 @@ class MainViewModel extends ChangeNotifier {
   final List<MapInfo> mapList = [];
   final List<SkinDataInfo> skinList = [];
   final List<MatchHistoryDetailInfoResponse> matchesInfoList = [];
+  final List<WeaponSkinDetail> weaponsList = [];
 
   PlayerCardResponse? playerCard;
   PlayerTitleResponse? playerTitle;
@@ -67,14 +71,14 @@ class MainViewModel extends ChangeNotifier {
       final remainingTime = timeUntilNextRotationDays();
 
       remainingTimeText = "상점 초기화까지 남은 시간: ${remainingTime.inHours}시간 ${remainingTime.inMinutes.remainder(60)}분 ${remainingTime.inSeconds.remainder(60)}초";
-      notifyListeners();
+      safeNotifyListeners();
     });
   }
 
   void onSelectIndex(int index, Function(String message) onMessage) {
     if(hasSigned) {
       selectedIndex = index;
-      notifyListeners();
+      safeNotifyListeners();
     } else {
       onMessage("로그인을 진행해주세요.");
     }
@@ -90,7 +94,7 @@ class MainViewModel extends ChangeNotifier {
     accessToken = "";
     idToken = "";
 
-    notifyListeners();
+    safeNotifyListeners();
   }
 
   String getLocale() {
@@ -103,14 +107,14 @@ class MainViewModel extends ChangeNotifier {
 
   Future<void> getPlayerInfo() async {
     playerInfoResponse = await playerInfoUseCase.getPlayerInfo(accessToken);
-    notifyListeners();
+    safeNotifyListeners();
   }
 
   Future<void> getMatchHistories(String entitleToken, Function(String message) onMessage) async {
     try {
       if(!isLoadingMatchHistories) {
         isLoadingMatchHistories = true;
-        notifyListeners();
+        safeNotifyListeners();
 
         await getMapsInfo();
 
@@ -147,13 +151,13 @@ class MainViewModel extends ChangeNotifier {
           }
 
           isLoadingMatchHistories = false;
-          notifyListeners();
+          safeNotifyListeners();
         });
       }
     }catch(err) {
       matchesInfoList.clear();
       isLoadingMatchHistories = false;
-      notifyListeners();
+      safeNotifyListeners();
 
       onMessage("오류가 발생했습니다.");
     }
@@ -173,7 +177,7 @@ class MainViewModel extends ChangeNotifier {
         extractPlayerUUID(idToken) ?? ""
     ).then((itemData) async {
       walletBalances = itemData.balances?.values.toList() ?? [];
-      notifyListeners();
+      safeNotifyListeners();
     });
   }
 
@@ -197,11 +201,26 @@ class MainViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> fetchWholeValorantApis(Entitlement token, Function(String message) onMessage) async {
+    await refreshStorefront(token.entitlementToken, (message) {
+      onMessage(message);
+    });
+
+    await getMatchHistories(token.entitlementToken, (message) {
+      onMessage(message);
+    });
+
+    await getPlayerLoadOut(token.entitlementToken, (message) {
+      onMessage(message);
+    });
+  }
+
+
   Future<void> getPlayerLoadOut(String entitleToken, Function(String message) onMessage) async {
     try{
       if(!isLoadingSetting) {
         isLoadingSetting = true;
-        notifyListeners();
+        safeNotifyListeners();
 
         await getPlayerInfo();
 
@@ -221,14 +240,24 @@ class MainViewModel extends ChangeNotifier {
         });
 
         isLoadingSetting = false;
-        notifyListeners();
+        safeNotifyListeners();
       }
     }catch(err){
       isLoadingSetting = false;
-      notifyListeners();
+      safeNotifyListeners();
 
       print("err : ${err}");
 
+      onMessage("오류가 발생했습니다.");
+    }
+  }
+
+  Future<void> getWeaponSkinList(Function(String message) onMessage) async {
+    try {
+      final weaponResponse = await skinUseCase.getWeaponSkinList();
+      weaponsList.addAll(weaponResponse.data);
+    }catch(err){
+      log("error : ${err}");
       onMessage("오류가 발생했습니다.");
     }
   }
@@ -245,7 +274,7 @@ class MainViewModel extends ChangeNotifier {
 
         function(token);
 
-        notifyListeners();
+        safeNotifyListeners();
       });
     }on DioException catch(error) {
       if(error.response?.statusCode == 401) {
@@ -259,7 +288,7 @@ class MainViewModel extends ChangeNotifier {
       idToken = "";
 
       skinList.clear();
-      notifyListeners();
+      safeNotifyListeners();
     }
   }
 
@@ -267,7 +296,7 @@ class MainViewModel extends ChangeNotifier {
     try {
       if(!isLoadingTodayShop) {
         isLoadingTodayShop = true;
-        notifyListeners();
+        safeNotifyListeners();
 
         await getWalletStatus(entitleToken);
         await storefrontUseCase.getStorefront(
@@ -296,14 +325,16 @@ class MainViewModel extends ChangeNotifier {
           }
 
           isLoadingTodayShop = false;
-          notifyListeners();
+          safeNotifyListeners();
           onMessage("상점 데이터를 불러왔습니다.");
         });
       }
     }catch(err){
-      isLoadingTodayShop = false;
-      notifyListeners();
-      onMessage("오류가 발생했습니다.");
+      if(!isDisposed) {
+        isLoadingTodayShop = false;
+        safeNotifyListeners();
+        onMessage("오류가 발생했습니다.");
+      }
     }
   }
 }

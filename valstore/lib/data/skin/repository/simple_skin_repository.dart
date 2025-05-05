@@ -4,6 +4,7 @@ import 'package:valstore/data/skin/model/map_response.dart';
 import 'package:valstore/data/skin/model/player_card_response.dart';
 import 'package:valstore/data/skin/model/player_title_response.dart';
 import 'package:valstore/data/skin/model/skin_response.dart';
+import 'package:valstore/data/skin/model/weapon_skin_response.dart';
 import 'package:valstore/data/skin/remote/skin_remote.dart';
 import 'package:valstore/data/skin/repository/skin_repository.dart';
 
@@ -36,5 +37,10 @@ class SimpleSkinRepository extends SkinRepository {
   @override
   Future<PlayerTitleResponse> getPlayerTitle(String playerTitleUUID) {
     return _skinRemote.getPlayerTitle(playerTitleUUID);
+  }
+
+  @override
+  Future<WeaponSkinResponse> getWeaponSkinList() {
+    return _skinRemote.getWeaponSkinsList();
   }
 }

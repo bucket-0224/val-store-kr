@@ -6,22 +6,13 @@ import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 
 import '../../util.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({super.key, required this.title, required this.eventSignOut});
+class AccountPage extends BaseStatelessWidget<MainViewModel> {
+  AccountPage({super.key, required this.title, required this.eventSignOut});
 
   final String title;
   final Future<void> Function() eventSignOut;
 
-  @override
-  State<StatefulWidget> createState() => _AccountPageState();
-}
-
-class _AccountPageState extends BaseWidget<MainViewModel, AccountPage> {
-  @override
-  void onPresented() { }
-
-
-  void showRegionPicker() async {
+  void showRegionPicker(BuildContext context) async {
     await showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) {
@@ -55,13 +46,17 @@ class _AccountPageState extends BaseWidget<MainViewModel, AccountPage> {
     });
   }
 
+
+  @override
+  void onPresented(BuildContext context) { }
+
   @override
   Widget onBuildWidget(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(title),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -110,10 +105,10 @@ class _AccountPageState extends BaseWidget<MainViewModel, AccountPage> {
               const Padding(padding: EdgeInsets.only(bottom: 8)),
               const Divider(),
               const Padding(padding: EdgeInsets.only(bottom: 8)),
-              SettingItem(settingName: "Set Locale", tailName: viewModel.getLocale(), onClickSetting: () => showRegionPicker()),
+              SettingItem(settingName: "Set Locale", tailName: viewModel.getLocale(), onClickSetting: () => showRegionPicker(context)),
               SettingItem(settingName: "Sign out", tailName: null, onClickSetting: () async {
                 viewModel.signOut();
-                await widget.eventSignOut();
+                await eventSignOut();
               }),
             ],
           ),

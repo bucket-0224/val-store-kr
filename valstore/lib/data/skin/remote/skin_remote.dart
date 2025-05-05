@@ -5,6 +5,7 @@ import 'package:valstore/data/skin/model/agent_response.dart';
 import 'package:valstore/data/skin/model/map_response.dart';
 import 'package:valstore/data/skin/model/player_card_response.dart';
 import 'package:valstore/data/skin/model/skin_response.dart';
+import 'package:valstore/data/skin/model/weapon_skin_response.dart';
 
 import '../../util/util.dart';
 import 'package:dio/dio.dart' hide Headers;
@@ -40,6 +41,10 @@ abstract class SkinRemote {
   Future<PlayerTitleResponse> getPlayerTitle(
       @Path("playerTitleUuid") String playerTitleUUID
   );
+  
+  @GET('/v1/weapons/skins')
+  @Headers({'Content-Type': 'application/json'})
+  Future<WeaponSkinResponse> getWeaponSkinsList();
 
   @GET('/v1/playercards/{playerCardUuid}')
   @Headers({'Content-Type': 'application/json'})

@@ -2,28 +2,29 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:valstore/presentation/base/base_viewmodel.dart';
 
-abstract class BaseWidget<T extends ChangeNotifier, V extends StatefulWidget> extends State<V> {
+abstract class BaseStatelessWidget<T extends BaseViewModel> extends StatelessWidget {
   late T viewModel;
 
   bool isInit = false;
 
-  void onPresented();
-  Widget onBuildWidget(BuildContext context);
+  BaseStatelessWidget({super.key});
 
-  @override
-  void didChangeDependencies() {
-    viewModel = Provider.of<T>(context, listen: true);
-    super.didChangeDependencies();
-  }
+  void onPresented(BuildContext context);
+  Widget onBuildWidget(BuildContext context);
 
   @override
   Widget build(BuildContext context) {
     if(!isInit) {
-      onPresented();
-      isInit = true;
+      viewModel = Provider.of<T>(context, listen: true);
+
+      if(!viewModel.isDisposed) {
+        onPresented(context);
+        isInit = true;
+      }
     }
-    
+
     return onBuildWidget(context);
   }
 }

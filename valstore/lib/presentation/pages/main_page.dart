@@ -11,14 +11,8 @@ import '../util.dart';
 import '../viewmodel/main_viewmodel.dart';
 import 'bottomsheet/login_bottom_sheet.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
-
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
+class MainPage extends BaseStatelessWidget<MainViewModel> {
+  MainPage({super.key});
 
   late WebViewController webViewController;
   List<Widget> navWidgets = [];
@@ -31,7 +25,7 @@ class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
     webViewController.loadRequest(Uri.parse(rsoRiotLoginUrl));
   }
 
-  void _handleRedirect(String url) {
+  void _handleRedirect(BuildContext context, String url) {
     Uri uri = Uri.parse(url);
 
     // 예제: URL에서 access_token과 id_token을 추출
@@ -52,10 +46,10 @@ class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
   }
 
   @override
-  void onPresented() async {
+  void onPresented(BuildContext context) async {
     navWidgets = [
-      const HomePage(title: "Daily Market",),
-      const MatchHistoryPage(title: "Match History"),
+      HomePage(title: "Daily Market",),
+      MatchHistoryPage(title: "Match History"),
       AccountPage(title: "My Account", eventSignOut: clearCache)
     ];
 
@@ -65,7 +59,7 @@ class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
           onNavigationRequest: (NavigationRequest request) {
             // 리다이렉트 URL 감지
             if (request.url.startsWith('https://playvalorant.com/opt_in')) {
-              _handleRedirect(request.url);
+              _handleRedirect(context, request.url);
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
@@ -74,8 +68,6 @@ class _MainPageState extends BaseWidget<MainViewModel, MainPage> {
       )
       ..loadRequest(Uri.parse(rsoRiotLoginUrl))
       ..setJavaScriptMode(JavaScriptMode.unrestricted);
-
-    if(!mounted) return;
 
     if(viewModel.sharedPreferences.getString("accessToken") != null
         && viewModel.sharedPreferences.get("idToken") != null) {

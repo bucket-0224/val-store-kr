@@ -8,7 +8,7 @@ void showRiotLoginBottomSheet(BuildContext context, WebViewController controller
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor: const Color.fromRGBO(22, 21, 25, 1.0),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -16,7 +16,7 @@ void showRiotLoginBottomSheet(BuildContext context, WebViewController controller
   ).then((data) async {
     if(data != null) {
       await viewModel.getEntitleToken(data['accessToken'], data['idToken'], (token) async {
-        await viewModel.refreshStorefront(token.entitlementToken, (message) {
+        await viewModel.fetchWholeValorantApis(token, (message) {
           ScaffoldMessenger.of(context).showSnackBar(
             //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
               SnackBar(
