@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 abstract class BaseViewModel extends ChangeNotifier {
   bool isDisposed = false;
 
+  void onDispose();
+
   @override
   void notifyListeners() {
     if(!isDisposed && hasListeners) {

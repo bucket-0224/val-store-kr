@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -33,6 +35,11 @@ class RiotLoginPage extends StatelessWidget {
               onVerticalDragUpdate: (_) {}, // 스크롤 활성화를 위한 터치 감지
               child: WebViewWidget(
                 controller: webViewController,
+                gestureRecognizers: {
+                  Factory<OneSequenceGestureRecognizer>(
+                        () => EagerGestureRecognizer(), // 모든 제스처 허용
+                  ),
+                },
               ),
             ),
           )

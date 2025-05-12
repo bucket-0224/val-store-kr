@@ -23,20 +23,21 @@ import '../../../domain/entitlement_usecase.dart';
 import '../bottomsheet/login_bottom_sheet.dart';
 import '../bottomsheet/page/login_rso_page.dart';
 
-class HomePage extends BaseStatelessWidget<MainViewModel> {
-  HomePage({
-    super.key,
+class HomePage extends StatefulWidget {
+  final String title;
+
+  const HomePage({super.key, required this.title});
+
+  @override
+  State<StatefulWidget> createState() => HomePageState(title: title);
+}
+
+class HomePageState extends BaseStatefulWidget<MainViewModel> {
+  HomePageState({
     required this.title
   });
 
   final String title;
-
-  @override
-  void onPresented(BuildContext context) async {
-    viewModel.startRemainingToRotation();
-
-    await viewModel.getWeaponSkinList((message) { });
-  }
 
   @override
   Widget onBuildWidget(BuildContext context) {

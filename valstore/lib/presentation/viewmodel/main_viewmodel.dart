@@ -155,11 +155,15 @@ class MainViewModel extends BaseViewModel {
         });
       }
     }catch(err) {
-      matchesInfoList.clear();
-      isLoadingMatchHistories = false;
-      safeNotifyListeners();
+      if(!isDisposed) {
+        matchesInfoList.clear();
+        isLoadingMatchHistories = false;
+        safeNotifyListeners();
 
-      onMessage("오류가 발생했습니다.");
+        log('err : $err');
+
+        onMessage("오류가 발생했습니다.");
+      }
     }
   }
 
@@ -202,15 +206,15 @@ class MainViewModel extends BaseViewModel {
   }
 
   Future<void> fetchWholeValorantApis(Entitlement token, Function(String message) onMessage) async {
+    await getPlayerLoadOut(token.entitlementToken, (message) {
+      onMessage(message);
+    });
+
     await refreshStorefront(token.entitlementToken, (message) {
       onMessage(message);
     });
 
     await getMatchHistories(token.entitlementToken, (message) {
-      onMessage(message);
-    });
-
-    await getPlayerLoadOut(token.entitlementToken, (message) {
       onMessage(message);
     });
   }
@@ -289,6 +293,8 @@ class MainViewModel extends BaseViewModel {
 
       skinList.clear();
       safeNotifyListeners();
+    } catch (err) {
+      log('err : $err');
     }
   }
 
@@ -297,6 +303,11 @@ class MainViewModel extends BaseViewModel {
       if(!isLoadingTodayShop) {
         isLoadingTodayShop = true;
         safeNotifyListeners();
+
+
+        log("accessToken : $accessToken");
+        log("entitlementToken : $entitleToken");
+        log("idToken : ${extractPlayerUUID(idToken)}");
 
         await getWalletStatus(entitleToken);
         await storefrontUseCase.getStorefront(
@@ -330,11 +341,18 @@ class MainViewModel extends BaseViewModel {
         });
       }
     }catch(err){
+      log('err : $err');
+
       if(!isDisposed) {
         isLoadingTodayShop = false;
         safeNotifyListeners();
         onMessage("오류가 발생했습니다.");
       }
     }
+  }
+
+  @override
+  void onDispose() {
+    stopRemainingTime();
   }
 }

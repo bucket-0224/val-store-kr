@@ -6,8 +6,18 @@ import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 
 import '../../util.dart';
 
-class AccountPage extends BaseStatelessWidget<MainViewModel> {
-  AccountPage({super.key, required this.title, required this.eventSignOut});
+class AccountPage extends StatefulWidget {
+  final String title;
+  final Future<void> Function() eventSignOut;
+
+  const AccountPage({super.key, required this.title, required this.eventSignOut});
+
+  @override
+  State<StatefulWidget> createState() => AccountPageState(title: title, eventSignOut: eventSignOut);
+}
+
+class AccountPageState extends BaseStatefulWidget<MainViewModel> {
+  AccountPageState({required this.title, required this.eventSignOut});
 
   final String title;
   final Future<void> Function() eventSignOut;
@@ -45,10 +55,6 @@ class AccountPage extends BaseStatelessWidget<MainViewModel> {
       }
     });
   }
-
-
-  @override
-  void onPresented(BuildContext context) { }
 
   @override
   Widget onBuildWidget(BuildContext context) {
