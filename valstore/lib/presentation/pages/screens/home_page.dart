@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:valstore/data/entitlement/model/entitlement_response.dart';
 import 'package:valstore/data/paid/model/wallet_response.dart';
@@ -38,6 +39,22 @@ class HomePageState extends BaseStatefulWidget<MainViewModel> {
   });
 
   final String title;
+
+  @override
+  void onPresented() async {
+    viewModel.startRemainingToRotation();
+    await viewModel.getWeaponSkinList((message) {
+      Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black54,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    });
+  }
 
   @override
   Widget onBuildWidget(BuildContext context) {
@@ -133,6 +150,8 @@ class HomePageState extends BaseStatefulWidget<MainViewModel> {
                               findWeaponSkins.first.levels,
                               viewModel
                           );
+                        }else{
+                          log("findWeapon : ${findWeaponSkins.isNotEmpty}");
                         }
                       },);
                   },

@@ -21,6 +21,9 @@ class MatchHistoryPageState extends BaseStatefulWidget<MainViewModel> {
   final String title;
 
   @override
+  void onPresented() { }
+
+  @override
   Widget onBuildWidget(BuildContext context) {
     return Scaffold(
         appBar: AppBar(

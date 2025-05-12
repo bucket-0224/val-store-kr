@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -17,21 +18,25 @@ void showRiotLoginBottomSheet(BuildContext context, WebViewController controller
     if(data != null) {
       await viewModel.getEntitleToken(data['accessToken'], data['idToken'], (token) async {
         await viewModel.fetchWholeValorantApis(token, (message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
-              SnackBar(
-                content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
-                duration: const Duration(seconds: 2), //올라와있는 시간
-              )
+          Fluttertoast.showToast(
+              msg: message,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black54,
+              textColor: Colors.white,
+              fontSize: 16.0
           );
         });
       }, (message) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
-            SnackBar(
-              content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
-              duration: const Duration(seconds: 2), //올라와있는 시간
-            )
+        Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            textColor: Colors.white,
+            fontSize: 16.0
         );
       });
     }

@@ -7,12 +7,18 @@ import 'package:valstore/presentation/base/base_viewmodel.dart';
 abstract class BaseStatefulWidget<T extends BaseViewModel> extends State<StatefulWidget> {
 
   late T viewModel;
+  bool isInit = false;
 
+  void onPresented();
   Widget onBuildWidget(BuildContext context);
 
   @override
   void didChangeDependencies() {
     viewModel = Provider.of<T>(context, listen: true);
+    if(!isInit) {
+      onPresented();
+      isInit = true;
+    }
 
     super.didChangeDependencies();
   }

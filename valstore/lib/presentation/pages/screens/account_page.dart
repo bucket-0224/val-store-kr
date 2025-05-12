@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:valstore/presentation/base/base_widget.dart';
 import 'package:valstore/presentation/components/setting_item.dart';
 import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
@@ -54,6 +55,10 @@ class AccountPageState extends BaseStatefulWidget<MainViewModel> {
         viewModel.setLocale(locale)
       }
     });
+  }
+
+  @override
+  void onPresented() {
   }
 
   @override
