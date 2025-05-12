@@ -26,10 +26,10 @@ class MainPageState extends BaseStatefulWidget<MainViewModel> {
 
 
   Future<void> clearCache() async {
-    // await webViewController.clearCache();
-    // await webViewController.clearLocalStorage();
-    //
-    // webViewController.loadRequest(Uri.parse(rsoRiotLoginUrl));
+    await webViewController.clearCache();
+    await webViewController.clearLocalStorage();
+
+    webViewController.loadRequest(Uri.parse(rsoRiotLoginUrl));
   }
 
   void _handleRedirect(BuildContext context, String url) {
