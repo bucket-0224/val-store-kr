@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:valstore/presentation/base/base_widget.dart';
 import 'package:valstore/presentation/pages/screens/account_page.dart';
 import 'package:valstore/presentation/pages/screens/home_page.dart';
@@ -30,6 +31,8 @@ class MainPageState extends BaseStatefulWidget<MainViewModel> {
     await webViewController.clearLocalStorage();
 
     webViewController.loadRequest(Uri.parse(rsoRiotLoginUrl));
+
+    await Restart.restartApp();
   }
 
   void _handleRedirect(BuildContext context, String url) {
@@ -63,30 +66,10 @@ class MainPageState extends BaseStatefulWidget<MainViewModel> {
       AccountPage(title: "My Account", eventSignOut: clearCache)
     ];
 
-    try {
-      webViewController = WebViewController()
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onNavigationRequest: (NavigationRequest request) {
-              // 리다이렉트 URL 감지
-              if (request.url.startsWith('https://playvalorant.com/opt_in')) {
-                _handleRedirect(context, request.url);
-                return NavigationDecision.prevent;
-              }
-              return NavigationDecision.navigate;
-            },
-          ),
-        )
-        ..loadRequest(Uri.parse(rsoRiotLoginUrl))
-        ..setJavaScriptMode(JavaScriptMode.unrestricted);
-    } catch (e, stack) {
-      debugPrint("❌ WebView cache clear error: $e\n$stack");
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(!mounted) return;
       if(viewModel.sharedPreferences.getString("accessToken") != null
           && viewModel.sharedPreferences.get("idToken") != null) {
+
         await viewModel.getEntitleToken(
             viewModel.sharedPreferences.getString("accessToken") ?? "",
             viewModel.sharedPreferences.getString("idToken") ?? "", (token) async {
@@ -150,7 +133,7 @@ class MainPageState extends BaseStatefulWidget<MainViewModel> {
                       fontSize: 16.0
                   );
                 })
-              } : showRiotLoginBottomSheet(context, webViewController, viewModel),
+              } : showRiotLoginBottomSheet(context, viewModel, _handleRedirect),
               tooltip: viewModel.hasSigned ? 'Refresh Shop' : 'RSO SignIn',
               child: viewModel.hasSigned ? const Icon(Icons.refresh) : const Icon(Icons.login),
             ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:valstore/data/match/model/match_history_detail_response.dart';
@@ -32,9 +34,13 @@ class MatchHistoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  (item.matchInfo.queueID.substring(0, 1).toUpperCase() + item.matchInfo.queueID.substring(1, item.matchInfo.queueID.length).toLowerCase()),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                item.matchInfo.queueID.isNotEmpty ?
+                  Text(
+                    (item.matchInfo.queueID.substring(0, 1).toUpperCase() + item.matchInfo.queueID.substring(1, item.matchInfo.queueID.length).toLowerCase()),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                  ) : const Text(
+                  "Unknown",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                 ),
                 Text(
                   item.teams.isNotEmpty ? "${item.teams[1].roundsWon} : ${item.teams[0].roundsWon}" : "0 : 0",

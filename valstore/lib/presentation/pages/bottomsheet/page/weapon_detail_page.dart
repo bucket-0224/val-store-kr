@@ -39,7 +39,7 @@ class _WeaponDetailPageState extends State<WeaponDetailPage> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.maxFinite,
-      height: MediaQuery.of(context).size.height * 0.7,
+      height: MediaQuery.of(context).size.height * 0.6,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

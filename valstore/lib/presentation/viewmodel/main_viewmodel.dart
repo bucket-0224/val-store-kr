@@ -35,6 +35,7 @@ class MainViewModel extends BaseViewModel {
   final PlayerInfoUseCase playerInfoUseCase;
 
   final List<MapInfo> mapList = [];
+  final List<BonusSkinDataInfo> bonusStoreList = [];
   final List<SkinDataInfo> skinList = [];
   final List<MatchHistoryDetailInfoResponse> matchesInfoList = [];
   final List<WeaponSkinDetail> weaponsList = [];
@@ -304,11 +305,6 @@ class MainViewModel extends BaseViewModel {
         isLoadingTodayShop = true;
         safeNotifyListeners();
 
-
-        log("accessToken : $accessToken");
-        log("entitlementToken : $entitleToken");
-        log("idToken : ${extractPlayerUUID(idToken)}");
-
         await getWalletStatus(entitleToken);
         await storefrontUseCase.getStorefront(
             accessToken,
@@ -320,6 +316,7 @@ class MainViewModel extends BaseViewModel {
 
           if (itemData.skinsPanelLayout?.singleItemStoreOffers != null) {
             for (var item in itemData.skinsPanelLayout!.singleItemStoreOffers!) {
+
               var data = await skinUseCase.getSkinInfo(item.rewards?[0].itemID ?? "");
 
               skinList.add(
@@ -334,6 +331,23 @@ class MainViewModel extends BaseViewModel {
               );
             }
           }
+
+          if(itemData.bonusStore?.bonusStoreOffers != null) {
+            for(var item in itemData.bonusStore!.bonusStoreOffers!) {
+              var data = await skinUseCase.getSkinInfo(item.offer?.rewards?[0].itemID ?? "");
+
+              bonusStoreList.add(
+                  BonusSkinDataInfo(
+                      uuid: data.data.uuid,
+                      displayName: data.data.displayName,
+                      displayIcon: data.data.displayIcon,
+                      assetPath: data.data.assetPath,
+                      bonusStoreOffer: item,
+                      startedDate: item.offer?.startDate ?? ""
+                  )
+              );
+            }
+        }
 
           isLoadingTodayShop = false;
           safeNotifyListeners();

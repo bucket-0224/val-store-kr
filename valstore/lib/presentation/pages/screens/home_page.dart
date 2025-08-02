@@ -65,6 +65,16 @@ class HomePageState extends BaseStatefulWidget<MainViewModel> {
             .colorScheme
             .inversePrimary,
         title: Text(title),
+        actions: [
+          // SizedBox(
+          //   width: 42,
+          //   height: 42,
+          //   child: IconButton(
+          //       onPressed: () {},
+          //       icon: Image.asset("assets/ic_night_market.png")
+          //   ),
+          // )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -144,12 +154,14 @@ class HomePageState extends BaseStatefulWidget<MainViewModel> {
                         }).toList();
 
                         if (findWeaponSkins.isNotEmpty) {
-                          showWeaponDetailBottomSheet(context,
-                              findWeaponSkins.first,
-                              findWeaponSkins.first.chromas,
-                              findWeaponSkins.first.levels,
-                              viewModel
-                          );
+                          if(findWeaponSkins.first.levels.length > 1 && findWeaponSkins.first.chromas.length > 1) {
+                            showWeaponDetailBottomSheet(context,
+                                findWeaponSkins.first,
+                                findWeaponSkins.first.chromas,
+                                findWeaponSkins.first.levels,
+                                viewModel
+                            );
+                          }
                         }else{
                           log("findWeapon : ${findWeaponSkins.isNotEmpty}");
                         }

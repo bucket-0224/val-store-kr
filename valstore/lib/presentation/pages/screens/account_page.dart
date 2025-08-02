@@ -50,9 +50,37 @@ class AccountPageState extends BaseStatefulWidget<MainViewModel> {
           ),
         );
       },
-    ).then((locale) => {
+    ).then((locale) async {
       if(locale != null) {
-        viewModel.setLocale(locale)
+        viewModel.setLocale(locale);
+
+        if(viewModel.sharedPreferences.getString("accessToken") != null && viewModel.sharedPreferences.get("idToken") != null) {
+          await viewModel.getEntitleToken(
+              viewModel.sharedPreferences.getString("accessToken") ?? "",
+              viewModel.sharedPreferences.getString("idToken") ?? "", (token) async {
+            await viewModel.fetchWholeValorantApis(token, (message) {
+              Fluttertoast.showToast(
+                  msg: message,
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.black54,
+                  textColor: Colors.white,
+                  fontSize: 16.0
+              );
+            });
+          }, (message) {
+            Fluttertoast.showToast(
+                msg: message,
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.black54,
+                textColor: Colors.white,
+                fontSize: 16.0
+            );
+          });
+        }
       }
     });
   }

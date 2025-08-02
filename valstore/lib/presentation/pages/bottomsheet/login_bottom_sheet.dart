@@ -3,9 +3,29 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../util.dart';
 import 'page/login_rso_page.dart';
 
-void showRiotLoginBottomSheet(BuildContext context, WebViewController controller, MainViewModel viewModel) {
+Future<void> showRiotLoginBottomSheet(BuildContext context, MainViewModel viewModel, handleRedirect) async {
+
+  WebViewController webViewController = WebViewController()
+    ..setNavigationDelegate(
+      NavigationDelegate(
+        onNavigationRequest: (NavigationRequest request) {
+          // 리다이렉트 URL 감지
+          if (request.url.startsWith('https://playvalorant.com/opt_in')) {
+            handleRedirect(context, request.url);
+
+            return NavigationDecision.prevent;
+          }
+          return NavigationDecision.navigate;
+        },
+      ),
+    )
+    ..loadRequest(Uri.parse(rsoRiotLoginUrl))
+    ..setJavaScriptMode(JavaScriptMode.unrestricted);
+
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -13,7 +33,7 @@ void showRiotLoginBottomSheet(BuildContext context, WebViewController controller
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (context) => RiotLoginPage(webViewController: controller,),
+    builder: (context) => RiotLoginPage(webViewController: webViewController,),
   ).then((data) async {
     if(data != null) {
       await viewModel.getEntitleToken(data['accessToken'], data['idToken'], (token) async {

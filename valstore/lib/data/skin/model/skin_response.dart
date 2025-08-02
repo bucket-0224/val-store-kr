@@ -66,3 +66,29 @@ class SkinDataInfo {
   factory SkinDataInfo.fromJson(Map<String, dynamic> json) => _$SkinDataInfoFromJson(json);
   Map<String, dynamic> toJson() => _$SkinDataInfoToJson(this);
 }
+
+@JsonSerializable()
+class BonusSkinDataInfo {
+  final String uuid;
+  final String displayName;
+  final String? levelItem;
+  final String displayIcon;
+  final String? streamedVideo;
+  final String assetPath;
+  final BonusStoreOffer bonusStoreOffer;
+  final String startedDate;
+
+  BonusSkinDataInfo({
+    required this.uuid,
+    required this.displayName,
+    this.levelItem,
+    required this.displayIcon,
+    this.streamedVideo,
+    required this.assetPath,
+    required this.bonusStoreOffer,
+    required this.startedDate
+  });
+
+  factory BonusSkinDataInfo.fromJson(Map<String, dynamic> json) => _$BonusSkinDataInfoFromJson(json);
+  Map<String, dynamic> toJson() => _$BonusSkinDataInfoToJson(this);
+}
