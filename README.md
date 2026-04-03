@@ -1,4 +1,3 @@
-```markdown
 # ValStore
 
 A Flutter-based mobile application designed to help Valorant players easily check their daily storefront, match history, and player profile on the go.
