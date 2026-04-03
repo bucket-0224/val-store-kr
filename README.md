@@ -82,4 +82,6 @@ lib/
 ## ⚠️ Disclaimer
 
 ValStore is an unofficial, fan-made application. It is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by Riot Games. All product and company names are the registered trademarks of their original owners.
-```
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://coff.ee/ydh878787)
+
