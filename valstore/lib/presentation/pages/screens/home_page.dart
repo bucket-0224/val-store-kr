@@ -68,14 +68,14 @@ class HomePageState extends BaseStatefulWidget<MainViewModel> {
             .inversePrimary,
         title: Text(title),
         actions: [
-          SizedBox(
+          viewModel.bonusStoreList.isNotEmpty ? SizedBox(
             width: 40,
             height: 40,
             child: IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BonusStorePage())),
                 icon: Image.asset("assets/ic_night_market.png")
             ),
-          ),
+          ) : Container(),
           const Padding(padding: EdgeInsets.only(left: 8))
         ],
       ),
