@@ -17,6 +17,7 @@ import 'package:valstore/domain/wallet_usecase.dart';
 import 'package:valstore/presentation/base/base_widget.dart';
 import 'package:valstore/presentation/components/skin_card_components.dart';
 import 'package:valstore/presentation/pages/bottomsheet/weapon_detail_bottom_sheet.dart';
+import 'package:valstore/presentation/pages/screens/bonus_store_page.dart';
 import 'package:valstore/presentation/util.dart';
 import 'package:valstore/presentation/viewmodel/main_viewmodel.dart';
 
@@ -60,20 +61,22 @@ class HomePageState extends BaseStatefulWidget<MainViewModel> {
   Widget onBuildWidget(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Theme
             .of(context)
             .colorScheme
             .inversePrimary,
         title: Text(title),
         actions: [
-          // SizedBox(
-          //   width: 42,
-          //   height: 42,
-          //   child: IconButton(
-          //       onPressed: () {},
-          //       icon: Image.asset("assets/ic_night_market.png")
-          //   ),
-          // )
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: IconButton(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BonusStorePage())),
+                icon: Image.asset("assets/ic_night_market.png")
+            ),
+          ),
+          const Padding(padding: EdgeInsets.only(left: 8))
         ],
       ),
       body: Padding(

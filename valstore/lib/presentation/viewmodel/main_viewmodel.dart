@@ -312,6 +312,7 @@ class MainViewModel extends BaseViewModel {
             getLocale(),
             extractPlayerUUID(idToken) ?? ""
         ).then((itemData) async {
+
           skinList.clear();
 
           if (itemData.skinsPanelLayout?.singleItemStoreOffers != null) {
