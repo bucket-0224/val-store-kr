@@ -41,10 +41,27 @@ class BonusSkinCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Image.asset("assets/ic_valorant_point.png", width: 16, height: 16,),
+                      Image.asset("assets/ic_valorant_point.png", width: 12, height: 12,),
                       const Padding(padding: EdgeInsets.only(left: 4)),
                       Text(
                         "${item.bonusStoreOffer.offer?.cost?.values.first ?? 0} VP",
+                        style: const TextStyle(fontSize: 12, decoration : TextDecoration.lineThrough),
+                      ),
+                      const Padding(padding: EdgeInsets.only(left: 8)),
+                      Text(
+                        "${item.bonusStoreOffer.discountPercent ?? 0} %",
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset("assets/ic_valorant_point.png", width: 16, height: 16,),
+                      const Padding(padding: EdgeInsets.only(left: 4)),
+                      Text(
+                        "${item.bonusStoreOffer.discountCosts?.values.first?? 0} VP",
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                       )
                     ],
